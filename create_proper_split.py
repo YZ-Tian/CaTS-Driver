@@ -3,9 +3,8 @@ import numpy as np
 from sklearn.model_selection import GroupShuffleSplit
 import os
 
-# --- 0. 配置 ---
 DATA_DIR = './data'
-OUTPUT_DIR = './data/proper_split' # 将新生成的文件放入一个专门的子目录
+OUTPUT_DIR = './data/proper_split'
 
 # --- 1. 加载原始数据和特征 ---
 df_all_unique_mutations = pd.read_csv(os.path.join(DATA_DIR, 'processed_mutations_with_seq.csv'))
@@ -27,7 +26,7 @@ groups_for_split = df_all_unique_mutations['gene']
 gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 train_idx, test_idx = next(gss.split(df_all_unique_mutations, groups=groups_for_split))
 
-# --- 3. 划分数据和特征 (不进行任何重采样) ---
+# --- 3. 划分数据和特征---
 final_train_df = df_all_unique_mutations.iloc[train_idx].reset_index(drop=True)
 final_train_esm2 = esm2_embeddings_all[train_idx]
 final_train_macro = macro_features_all[train_idx]
