@@ -26,7 +26,6 @@ PATIENCE = 20
 
 # --- 1. 权重计算函数 ---
 def get_driver_pos_weight(subset_dataset):
-    print("正在计算当前训练集的 Driver 任务的 pos_weight...")
     all_driver_labels = subset_dataset.dataset.driver_labels[subset_dataset.indices]
     num_positive = np.sum(all_driver_labels == 1)
     num_negative = np.sum(all_driver_labels == 0)
@@ -35,7 +34,6 @@ def get_driver_pos_weight(subset_dataset):
     return torch.tensor([pos_weight], device=DEVICE)
 
 def get_tissue_pos_weights(subset_dataset, tissue_num):
-    print("正在计算当前训练集的每个癌种的 pos_weight (多标签 BCEWithLogitsLoss 策略)...")
     all_tissue_labels = subset_dataset.dataset.tissue_labels[subset_dataset.indices]
     
     pos_weights = torch.zeros(tissue_num)
@@ -101,10 +99,9 @@ def find_best_thresholds(t_true, t_pred, tissue_num):
 
 # --- 4. 主训练流程 ---
 def run_cv():
-    # 使用新的、未经重采样的数据集
-    csv_path = "./data/proper_split/train_data_unbalanced.csv"
-    esm_path = "./data/proper_split/train_esm2_embeddings_unbalanced.npy"
-    macro_path = "./data/proper_split/train_macro_features_unbalanced.npy" 
+    csv_path = "./data/train_data.csv"
+    esm_path = "./data/train_esm2_embeddings.npy"
+    macro_path = "./data/train_macro_features.npy" 
     
     full_train_dataset = MutationDataset(csv_path, esm_path, macro_path)
     
@@ -138,7 +135,7 @@ def run_cv():
         best_overall_val_score_this_fold = -1 
         patience_counter = 0
         best_metrics_this_fold = (0, 0, 0) 
-        best_thresholds_this_fold = None # 新增：保存当前折的最佳阈值
+        best_thresholds_this_fold = None
 
         current_fold_model_path = f"./best_models/best_model_fold{fold}.pth" 
         current_fold_thresholds_path = f"./best_thresholds/best_thresholds_fold{fold}.npy" # 新增：阈值保存路径
